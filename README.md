@@ -17,15 +17,14 @@ To use this software, follow these steps:
 1. Clone the repository to your local machine.
 2. Create and activate a new virtual environment by running the following commands:
 
->
-> python -m venv venv
->
-> source venv/bin/activate      # For Unix/Linux/MacOS
+> cd wallet-data-visualization
 > 
-> venv\Scripts\activate.bat    # For Windows
+> pipenv install
+> 
+> pipenv shell
 > 
 
-2. Launch the application by running ''streamlit run wariskmin.py'' in your terminal.
+3. Launch the application by running ''streamlit run wariskmin.py'' in your terminal.
 
 # License
 
