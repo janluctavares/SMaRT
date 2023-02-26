@@ -30,9 +30,15 @@ To use this software, follow these steps:
 
 This project is licensed under the MIT License. For more information, see the LICENSE file.
 
-# Other remarks
+# ROADMAP
 
-The author is enthusiastic about ChatGPT and will be using it for bits and pieces throughout the project, like the creation of this readme file. The chat couldn't make all the readme file, but helped by building a sketch.
+* Chat with finance professionals in order to gather requirements and interesting features to the project. Show presentation and develop details of the Roadmap. Divide roadmap by weeks.
+* Save data for offline usage.
+* Explore basic pairwise correlations.
+* Check if Bokeh is compatible with Streamlit or if I'll need to work with Altair.
+* Make first data visualizations and implement side panel.
+
+The author is enthusiastic about ChatGPT and will be using it for bits and pieces throughout the project, like the creation of this readme file. The chat couldn't make a complete the readme file, but helped by building a sketch.
 
 # Contact Information
 
