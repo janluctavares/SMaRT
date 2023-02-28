@@ -13,8 +13,8 @@ import yfinance as yf
 import pandas as pd
 
 # Define constants.
-STOCKS = ['AAPL', 'GOOGL', 'TSLA', 'AMZN', 'MSFT', 'NVDA', 'JPM', 'JNJ', 'V']
-PERIOD = '10y'
+STOCKS = ['AAPL', 'GOOGL', 'TSLA', 'AMZN', 'MSFT', 'NVDA']
+PERIOD = '1y'
 INTERVAL = '1d'
 
 # Retrieve data for all stocks

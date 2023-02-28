@@ -33,8 +33,8 @@ This project is licensed under the MIT License. For more information, see the LI
 # ROADMAP
 
 * Chat with finance professionals in order to gather requirements and interesting features to the project. Show presentation and develop details of the Roadmap. Divide roadmap by weeks.
-* Save data for offline usage.
-* Explore basic pairwise correlations.
+* DONE: *Save data for offline usage.*
+* DONE: *Explore basic pairwise correlations.*
 * Check if Bokeh is compatible with Streamlit or if I'll need to work with Altair.
 * Make first data visualizations and implement side panel.
 
