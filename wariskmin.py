@@ -127,6 +127,55 @@ def portfolio_page():
     st.write(f'Variância da carteira: {wallet_var:.4f}')
     st.write(one_year_returns)
 
+    cumulative_returns = (selected_data / selected_data.iloc[0] - 1).fillna(0)
+	# TODO: Colocar o retorno da carteira criada para comparar com o retorno cumulativo das ações individualmente. 
+    st.write('## Preços das ações')
+    fig, ax = plt.subplots(figsize=(12, 8))
+
+
+    date_labels = pd.date_range(start=selected_data.index.min(), end=selected_data.index.max(), freq='MS')
+    date_ticks = [date_labels[i].strftime('%Y-%m-%d') for i in range(0, len(date_labels), 3)]
+    #st.write(date_ticks)
+    #st.write(date_labels)
+    #ax.set_xticks(date_labels)
+    #ax.set_xticklabels(date_ticks, rotation=45, ha='right')
+
+    sns.lineplot(data=selected_data)
+    plt.xticks(rotation=45)
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    st.pyplot(fig)
+    
+    # Line plot of cumulative returns
+    st.write('## Retorno em um ano')
+    fig, ax = plt.subplots(figsize=(12, 8))
+    sns.lineplot(data=cumulative_returns)
+    plt.xticks(rotation=45)
+    plt.xlabel('Date')
+    plt.ylabel('Cumulative Return')
+
+    st.pyplot(fig)
+    
+    fig, ax = plt.subplots()
+    for stock in selected_stocks:
+        sns.lineplot(x='Date', y=stock, data=selected_data)
+    st.pyplot(fig)
+
+    fig, ax = plt.subplots()
+    N = 10
+    returns = np.zeros((N, 100))
+    assets = np.zeros((N, 100))
+    for i in range(1,N):
+        R_i = np.random.normal(1.01, 0.03, 100)
+        returns[i] = R_i 
+        assets[i] = np.cumprod(R_i)
+        plt.plot(assets[i], alpha=0.3)
+    R_P = np.mean(returns, axis=0)
+    P = np.mean(assets, axis=0)
+    ax.set_xlabel("Tempo")
+    ax.set_ylabel("Preço")
+    st.pyplot(fig)
+
 
 # Define pages
 PAGES = {
