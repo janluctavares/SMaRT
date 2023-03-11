@@ -10,7 +10,6 @@ CMP596 - Visual Analytics for Data Science
 PPGC - INF/UFRGS
 """
 
-import yfinance as yf
 import numpy as np
 from sklearn.cluster import KMeans
 import streamlit as st
@@ -94,7 +93,39 @@ def risk_page():
     st.pyplot(fig)
     
 def portfolio_page():
-	st.write("Esta página contem o grosso do projeto. Seleção de ações e visualização dos retornos passados das ações e da carteira.")
+    st.sidebar.header('Configure sua carteira')
+    selected_stocks = st.sidebar.multiselect('Selecione as ações', data.columns, default=data.columns[0])
+    wallet_percentages = {}
+    for stock in selected_stocks:
+        wallet_percentages[stock] = st.sidebar.slider(f'{stock} (%)', 0, 100, 10)
+    st.sidebar.write("As porcentagens de cada açao serao normalizadas para somar 100%")
+    
+    
+    factor = 1.0/sum(wallet_percentages.values())
+    for stock in wallet_percentages:
+        wallet_percentages[stock] = wallet_percentages[stock] * factor * 100
+
+    
+    # Calculate wallet variance
+    # TODO: Calculate variance CORRECTLY - not only by averaging, but by using the covariance, etc.
+    selected_data = data[selected_stocks]
+    selected_data_normalized = selected_data / selected_data.iloc[0]
+    wallet_weights = pd.Series(wallet_percentages).div(100)
+    wallet_var = selected_data_normalized.mul(wallet_weights, axis=1).sum(axis=1).pct_change().var()
+    
+    # Calculate last year returns
+    # TODO: PLOT the returns of the selected stocks with alpha 0.3 and the wallet with larger alpha
+    last_date = pd.to_datetime(data.index[-1])
+    one_year_ago = pd.Timestamp(last_date.year - 1, last_date.month, last_date.day)
+    one_year_data = data.loc[str(one_year_ago):str(last_date)][selected_stocks]
+    one_year_returns = ((one_year_data.iloc[-1] - one_year_data.iloc[0]) *100 / one_year_data.iloc[0]).to_frame('Retorno % em 1 ano do ativo')
+    
+    # Display results
+    st.write('### Carteira configurada')
+    wallet_df = pd.DataFrame(wallet_percentages, index=['%']).T
+    st.write(wallet_df)
+    st.write(f'Variância da carteira: {wallet_var:.4f}')
+    st.write(one_year_returns)
 
 
 # Define pages

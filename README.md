@@ -24,7 +24,8 @@ To use this software, follow these steps:
 > pipenv shell
 > 
 
-3. Launch the application by running ''streamlit run wariskmin.py'' in your terminal.
+3. Download the sample data by running "python3 ./sample-downloader.py"
+4. Launch the application by running ''streamlit run wariskmin.py'' in your terminal.
 
 # License
 
@@ -32,11 +33,13 @@ This project is licensed under the MIT License. For more information, see the LI
 
 # ROADMAP
 
-* Chat with finance professionals in order to gather requirements and interesting features to the project. Show presentation and develop details of the Roadmap. Divide roadmap by weeks.
+* DONE: *Chat with finance professionals in order to gather requirements and interesting features to the project. Show presentation and develop details of the Roadmap. Divide roadmap by weeks.*
 * DONE: *Save data for offline usage.*
 * DONE: *Explore basic pairwise correlations.*
-* Check if Bokeh is compatible with Streamlit or if I'll need to work with Altair.
+* DONE: *Check if Bokeh is compatible with Streamlit or if I'll need to work with Altair.* RESULT: It is not compatible, but I can you either Altair or Matplotlib and Seaborn.
 * Make first data visualizations and implement side panel.
+* Insert current news widget
+* Make a wallet construction page including: dropdown menu of stocks selection showing calculated volatility, estimated returns and potential losses.
 
 The author is enthusiastic about ChatGPT and will be using it for bits and pieces throughout the project, like the creation of this readme file. The chat couldn't make a complete the readme file, but helped by building a sketch.
 
