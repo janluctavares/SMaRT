@@ -16,6 +16,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from matplotlib.dates import MonthLocator, DateFormatter
 
 
 data = pd.read_csv("DownloadedStockPrices.csv") #reads file where the downloaded stocks are stored
@@ -92,90 +93,81 @@ def risk_page():
     ax.set_ylabel("Annual Return (%)")
     st.pyplot(fig)
     
-def portfolio_page():
-    st.sidebar.header('Configure sua carteira')
-    selected_stocks = st.sidebar.multiselect('Selecione as ações', data.columns, default=data.columns[0])
-    wallet_percentages = {}
-    for stock in selected_stocks:
-        wallet_percentages[stock] = st.sidebar.slider(f'{stock} (%)', 0, 100, 10)
-    st.sidebar.write("As porcentagens de cada açao serao normalizadas para somar 100%")
     
-    
+def DisplayResults(selected_stocks, wallet_percentages):
+    '''
+    Function created to display the results of the built wallet on the Portfolio Page.
+    '''
     factor = 1.0/sum(wallet_percentages.values())
     for stock in wallet_percentages:
         wallet_percentages[stock] = wallet_percentages[stock] * factor * 100
-
-    
+        
     # Calculate wallet variance
-    # TODO: Calculate variance CORRECTLY - not only by averaging, but by using the covariance, etc.
-    selected_data = data[selected_stocks]
-    selected_data_normalized = selected_data / selected_data.iloc[0]
+    # TODO: Check if this variance is being calculated CORRECTLY (maybe not only by averaging, but by using the covariance, etc.)
+    selected_data = data[selected_stocks] # Filter the data so the dataframe is made only by the selected stocks.
+    selected_data_normalized = selected_data / selected_data.iloc[0] 
     wallet_weights = pd.Series(wallet_percentages).div(100)
-    wallet_var = selected_data_normalized.mul(wallet_weights, axis=1).sum(axis=1).pct_change().var()
+    stocks_var = selected_data_normalized.var()
+    wallet_var = selected_data_normalized.mul(wallet_weights, axis=1).sum(axis=1).var() # TODO: Evaluate this line in detail
+    #st.write(wallet_var)
     
     # Calculate last year returns
     # TODO: PLOT the returns of the selected stocks with alpha 0.3 and the wallet with larger alpha
     last_date = pd.to_datetime(data.index[-1])
     one_year_ago = pd.Timestamp(last_date.year - 1, last_date.month, last_date.day)
-    one_year_data = data.loc[str(one_year_ago):str(last_date)][selected_stocks]
-    one_year_returns = ((one_year_data.iloc[-1] - one_year_data.iloc[0]) *100 / one_year_data.iloc[0]).to_frame('Retorno % em 1 ano do ativo')
+    one_year_data = selected_data.loc[str(one_year_ago):str(last_date)]
+    one_year_returns = ((one_year_data - one_year_data.iloc[0]) *100 / one_year_data.iloc[0])
+    
+    wallet_returns = one_year_returns.mul(wallet_weights, axis=1).sum(axis=1)
     
     # Display results
-    st.write('### Carteira configurada')
-    wallet_df = pd.DataFrame(wallet_percentages, index=['%']).T
+
+    
+    st.write('### Sua carteira:')
+    wallet_df = pd.DataFrame(wallet_percentages, index=['Porção da carteira (%)']).T
+    #wallet_df["Porção da carteira (%)"]["Carteira"] = 100
+    wallet_df = pd.concat([wallet_df, one_year_returns.iloc[-1], stocks_var], axis = "columns")
+    wallet_df.rename(columns = {list(wallet_df)[1]:'Retorno em 1 ano', 0:"Variância normalizada (risco)"}, inplace = True)
     st.write(wallet_df)
-    st.write(f'Variância da carteira: {wallet_var:.4f}')
-    st.write(one_year_returns)
+    st.write(f'Variância da carteira: {wallet_var:.6f}')
+    st.write(f'Retorno da carteira: {wallet_returns[-1]:.2f}%')
+    #st.write(one_year_returns)
 
-    cumulative_returns = (selected_data / selected_data.iloc[0] - 1).fillna(0)
+    cumulative_returns = (selected_data/selected_data.iloc[0] - 1).fillna(0)
 	# TODO: Colocar o retorno da carteira criada para comparar com o retorno cumulativo das ações individualmente. 
-    st.write('## Preços das ações')
-    fig, ax = plt.subplots(figsize=(12, 8))
 
-
-    date_labels = pd.date_range(start=selected_data.index.min(), end=selected_data.index.max(), freq='MS')
-    date_ticks = [date_labels[i].strftime('%Y-%m-%d') for i in range(0, len(date_labels), 3)]
-    #st.write(date_ticks)
-    #st.write(date_labels)
-    #ax.set_xticks(date_labels)
-    #ax.set_xticklabels(date_ticks, rotation=45, ha='right')
-
-    sns.lineplot(data=selected_data)
-    plt.xticks(rotation=45)
-    plt.xlabel('Date')
-    plt.ylabel('Price')
-    st.pyplot(fig)
     
-    # Line plot of cumulative returns
+    #cumulative_returns["Carteira"] = cumulative_returns.mul(wallet_weights, axis=1).sum(axis=1)
+    # Line plot of the cumulative returns
     st.write('## Retorno em um ano')
-    fig, ax = plt.subplots(figsize=(12, 8))
-    sns.lineplot(data=cumulative_returns)
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.lineplot(data=one_year_returns, alpha=0.3, markers=False)
+    sns.lineplot(data=wallet_returns, markers=False)
+    ax.xaxis.set_major_formatter(DateFormatter(' '))
+
     plt.xticks(rotation=45)
-    plt.xlabel('Date')
-    plt.ylabel('Cumulative Return')
+    plt.xlabel('Data')
+    plt.ylabel('Retorno acumulado (%)')
 
     st.pyplot(fig)
+        
     
-    fig, ax = plt.subplots()
-    for stock in selected_stocks:
-        sns.lineplot(x='Date', y=stock, data=selected_data)
-    st.pyplot(fig)
+def portfolio_page():
 
-    fig, ax = plt.subplots()
-    N = 10
-    returns = np.zeros((N, 100))
-    assets = np.zeros((N, 100))
-    for i in range(1,N):
-        R_i = np.random.normal(1.01, 0.03, 100)
-        returns[i] = R_i 
-        assets[i] = np.cumprod(R_i)
-        plt.plot(assets[i], alpha=0.3)
-    R_P = np.mean(returns, axis=0)
-    P = np.mean(assets, axis=0)
-    ax.set_xlabel("Tempo")
-    ax.set_ylabel("Preço")
-    st.pyplot(fig)
+    st.header('Configure sua carteira')	
 
+    col1, col2 = st.columns(2)
+    with col1:
+
+        selected_stocks = st.multiselect('Selecione as ações', data.columns, default=data.columns[0])
+    with col2:
+        wallet_percentages = {}
+        for stock in selected_stocks:
+            wallet_percentages[stock] = st.slider(f'{stock} (%)', 0, 100, 10)
+
+    st.write("As porcentagens de cada ação serao normalizadas para somar 100%")
+    if(st.button("Carteira Configurada")):
+        DisplayResults(selected_stocks, wallet_percentages)
 
 # Define pages
 PAGES = {
