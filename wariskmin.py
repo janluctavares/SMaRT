@@ -17,6 +17,9 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.dates import MonthLocator, DateFormatter
+import requests
+import json
+from streamlit_marquee import streamlit_marquee
 
 
 data = pd.read_csv("DownloadedStockPrices.csv") #reads file where the downloaded stocks are stored
@@ -184,3 +187,40 @@ selection = st.sidebar.radio("Ir para", list(PAGES.keys()))
 # Display selected page
 page = PAGES[selection]
 page()
+
+## Adicionando newsflash
+
+
+from chaves import key
+
+# Chave de API da NewsAPI
+api_key = key
+url = f"https://newsapi.org/v2/top-headlines?country=br&category=business&apiKey={api_key}"
+
+# Faz a requisição para a API e obtém as notícias
+response = requests.get(url)
+noticias = json.loads(response.text)
+headlines= "HEADLINES DAS ULTIMAS NOTICIAS: "
+
+for i in range(len(noticias['articles'])):
+    headlines += "  " + str(i+1) + ". " + noticias['articles'][i]['title'] + "  ||"
+
+# Exibe as notícias em uma barra horizontal
+st.write("Notícias de empresas e finanças:")
+
+streamlit_marquee(**{
+    # the marquee container background color
+    'background': "#e6e6e6",
+    # the marquee text size
+    'font-size': '12px',
+    # the marquee text color
+    "color": "#1a1a1a",
+    # the marquee text content
+    'content': headlines,
+    # the marquee container width
+    'width': '1000px',
+    # the marquee container line height
+    'lineHeight': "35px",
+    # the marquee duration
+    'animationDuration': '180s',
+})
