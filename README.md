@@ -38,7 +38,7 @@ This project is licensed under the MIT License. For more information, see the LI
 * DONE: *Explore basic pairwise correlations.*
 * DONE: *Check if Bokeh is compatible with Streamlit or if I'll need to work with Altair.* RESULT: It is not compatible, but I can you either Altair or Matplotlib and Seaborn.
 * DONE: Make first data visualizations and implement side panel.
-* Insert current news widget
+* DONE: Insert current news widget
 * Make a wallet construction page including: dropdown menu of stocks selection showing calculated volatility, estimated returns and potential losses.
 * Interesting useful data source and API: http://www.ipeadata.gov.br/Default.aspx. Implement usage of this (to obtain benchmark data)
 
