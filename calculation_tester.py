@@ -58,11 +58,6 @@ cluster_dict = {}
 for label in np.unique(labels):
     cluster_dict[label] = list(corr_df[corr_df['label'] == label].index)
 
-# Print the count of each cluster and the names of the stocks in each cluster
-for label, count in cluster_counts.items():
-    print(f"Cluster {label} contem {count} açoes: {cluster_dict[label]}")
-
-
 sectors = {"VALE3.SA" : "Materiais",
 "PETR4.SA" : "Energia",
 "ITUB4.SA" : "Financeiro",
@@ -146,14 +141,25 @@ sectors = {"VALE3.SA" : "Materiais",
 "STBP3.SA" : "Industriais",
 "TRPL4.SA" : "Utilidade Pública"}
 
-# Classifica cada ação da lista STOCKS
-sectors = {}
-for stock in STOCKS:
-    sector = classifier.classify(stock)
-    sectors[stock] = sector
 
 # Cria um DataFrame com as ações e suas classificações setoriais
-df = pd.DataFrame(list(sectors.items()), columns=['Stock', 'Sector'])
+Setores_df = pd.DataFrame(list(sectors.items()), columns=['Açao', 'Setor'])
+Setores_df.set_index("Açao")
+
+# Print the count of each cluster and the names of the stocks in each cluster
+for label, count in cluster_counts.items():
+    print(f"Cluster {label} contem {count} açoes:")
+    print(Setores_df.loc[Setores_df.Açao.isin(cluster_dict[label])])
+
+versus_poupanca=pd.DataFrame({"Carteira": [825], "Poupança":[200]})
+fig, ax = plt.subplots(figsize=(10, 8))
+sns.barplot(data=versus_poupanca)
+plt.show(fig)
+print(versus_poupanca)
+
+
+st.write(versus_poupanca)
+
 
 # Imprime o DataFrame
 print(df)
