@@ -34,6 +34,9 @@ def home_page():
     st.write("Investir no mercado de ações pode ser intimidador, mas com as estratégias certas, você pode construir uma carteira diversificada que minimiza o risco.")
     st.write("A diversificação é a principal dessas estratégias: Ao investir em uma variedade de ações em diferentes setores e indústrias, você pode espalhar seu risco e se proteger contra as flutuações do mercado.")
     st.write(" # Vamos entender mais sobre isso!") 
+    st.write("Nesta ferramenta, trabalhamos com os dados de 78 companhias negociadas na bolsa de valores brasileira e com dois indices, o IBOV (Brasil) e o S&P500 (EUA) representados por 'BOVA11.SA' e 'IVVB11.SA' respectivamente.")
+    st.write("Os dados obtidos compreendem os dias uteis de 11/03/2019 a 10/03/2023 e um programa auxiliar foi desenvolvido para fazer o download para outras datas, ativos e indices.")
+    
 def market_page():
 	st.write("# Conhecendo o mercado")
 	st.write("Vamos trabalhar com dados das ações mais negociadas da bolsa de valores brasileira! Dos 100 'papeis' mais negociados na bolsa, estas 80 são as que temos acesso a 4 anos de dados.")
@@ -305,7 +308,7 @@ def DisplayResults(selected_stocks, wallet_percentages):
     #st.write(versus_poupanca)
     #st.write(one_year_returns)
 
-    cumulative_returns = (selected_data/selected_data.iloc[0] - 1).fillna(0)
+    
 
     
     #cumulative_returns["Carteira"] = cumulative_returns.mul(wallet_weights, axis=1).sum(axis=1)
@@ -352,12 +355,15 @@ def portfolio_page():
     dados = data.loc[str(int(data.index[-1][:4]) - tempo)+data.index[-1][4:]:]
     st.write("A ideia aqui é escolher as maiores médias de retornos com os menores riscos. Queremos que 95% dos retornos diários estejam entre valores baixos, pois dessa forma a volatilidade é baixa (é apenas outra forma de representar a volatilidade).")
     data_returns = dados.pct_change()[1:]
+    cumulative_returns = (data_returns+1).cumprod(axis=0)
+    cumulative_returns = ((cumulative_returns-1)*100).iloc[-1]
     returns_var = data_returns.var()
     returns_deltas = (2*np.sqrt(returns_var))*100
     returns_means = data_returns.mean()*100
-    summary = pd.concat([returns_means, returns_deltas], axis = "columns")
+    #st.write(cumulative_returns)
+    summary = pd.concat([returns_means, returns_deltas, cumulative_returns], axis = "columns")
     
-    summary.rename(columns = {list(summary)[0]:'Média dos retornos (%)', 1:"~95% dos retornos diários entre +- (%)"}, inplace = True)
+    summary.rename(columns = {list(summary)[0]:'Média dos retornos (%)', 1:"~95% dos retornos diários entre +- (%)", "2023-03-10":"Retorno acumulado no periodo (%)"}, inplace = True)
     st.write(summary)
 
 
