@@ -32,9 +32,13 @@ def home_page():
     st.write("### Entendendo ações e exposição a risco")
     st.write("Investir no mercado de ações pode ser intimidador, mas com as estratégias certas, você pode construir uma carteira diversificada que minimiza o risco.")
     st.write("A diversificação é a principal dessas estratégias: Ao investir em uma variedade de ações em diferentes setores e indústrias, você pode espalhar seu risco e se proteger contra as flutuações do mercado.")
-    st.write(" # Vamos entender mais sobre isso!") 
+    st.write(" # Vamos entender mais sobre isso!")
+    st.write("Utilize a barra de navegação à esquerda para navegar entre as páginas do app.")
+     
+    st.subheader("Sobre o dataset")
     st.write("Nesta ferramenta, trabalhamos com os dados de 78 companhias negociadas na bolsa de valores brasileira e com dois indices, o IBOV (Brasil) e o S&P500 (EUA) representados por 'BOVA11.SA' e 'IVVB11.SA' respectivamente.")
     st.write("Os dados obtidos compreendem os dias uteis de 11/03/2019 a 10/03/2023 e um programa auxiliar foi desenvolvido para fazer o download para outras datas, ativos e indices.")
+    st.write(" ### Abaixo, ainda pretendo detalhar melhor o dataset")
     
 def market_page():
 	st.write("# Conhecendo o mercado")
@@ -68,7 +72,7 @@ def market_page():
 		
 
 
-	st.write("## Agrupando as ações baseado nas suas distâncias")
+	st.write("## Agrupando as ações baseado nas suas correlações")
 	cluster_order = np.argsort(kmeans.labels_)
 	sorted_corr_df = corr_df.iloc[cluster_order, cluster_order]
 
@@ -173,7 +177,8 @@ def market_page():
 	cluster_dict = {}
 	for label in np.unique(labels):
 		cluster_dict[label] = list(corr_df[corr_df['label'] == label].index)
-
+	st.write("Note que as tabelas abaixo acabam agrupando ações do mesmo setor quando o número de clusters aumenta. Isso quer dizer que as companhias que mais variam juntas são dos mesmos setores. Para diminuir o risco, prefira construir uma carteira com ações que estejam menos correlacionadas.")
+	
     # Print the count of each cluster and the names of the stocks in each cluster
 	col1, col2 = st.columns(2)
 	i = 0
