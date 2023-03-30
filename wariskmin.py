@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import MonthLocator, DateFormatter
 import requests
 import json
-from streamlit_marquee import streamlit_marquee
+#from streamlit_marquee import streamlit_marquee
 from datetime import datetime, timedelta
 
 
@@ -186,43 +186,6 @@ def market_page():
 			col2.write(Setores_df.loc[Setores_df.Açao.isin(cluster_dict[label])])      
 		i+=1
     
-	## Adicionando newsflash
-
-
-	from chaves import key
-
-	# Chave de API da NewsAPI
-	api_key = key
-	url = f"https://newsapi.org/v2/top-headlines?country=br&category=business&apiKey={api_key}"
-
-	# Faz a requisição para a API e obtém as notícias
-	response = requests.get(url)
-	noticias = json.loads(response.text)
-	headlines= "ULTIMAS NOTICIAS: "
-	
-	for i in range(len(noticias['articles'])):
-	    headlines += "  " + str(i+1) + ". " + noticias['articles'][i]['title'] + "  ||"
-	
-	# Exibe as notícias em uma barra horizontal
-	st.write("### Últimas notícias de finanças:")
-	
-	streamlit_marquee(**{
-	    # the marquee container background color
-	    'background': "#e5e5e5",
-	    # the marquee text size
-	    'font-size': '12px',
-	    # the marquee text color
-	    "color": "#1a1a1a",
-	    # the marquee text content
-	    'content': headlines,
-	    # the marquee container width
-	    'width': '1200px',
-	    # the marquee container line height
-	    'lineHeight': "35px",
-	    # the marquee duration
-	    'animationDuration': '180s',
-	})
-	
 
 def risk_page():
     st.header("Estratégias de Investimento")
