@@ -304,19 +304,10 @@ def DisplayResults(selected_stocks, wallet_percentages):
 def portfolio_page():
 
     st.header('Simule sua carteira')	
+	st.write("Vamos simular uma carteira! Para isso, use as informações da tabela para escolher suas ações, escolha as ações e clique no botão no fim da página para conferir os resultados."
+	st.write("Utilize a barra abaixo para selecionar o período para construção das estatísticas. Na tabela, você observa informações importantes como média de retornos (uma média mais alta quer dizer que o ativo costuma crescer mais), uma ideia de quanto o valor da ação oscila (dada pela informação da nossa expectativa sobre a maioria dos retornos diários) e o retorno acumulado em todo o período selecionado. Depois de escolher suas ações ")
 
-    col1, col2 = st.columns(2)
-    with col1:
-
-        selected_stocks = st.multiselect('Selecione as ações', data.columns, default=data.columns[0])
-    with col2:
-        wallet_percentages = {}
-        for stock in selected_stocks:
-            wallet_percentages[stock] = st.slider(f'Valor investido na {stock} (R$)', 0, 1000, 10)
-    
-  
-
-    tempo = st.slider('Escolha o tempo para fazer a análise das ações', 1, 4, step=1, value=2)
+    tempo = st.slider('Escolha o tempo para fazer a análise das ações (ANOS)', 1, 4, step=1, value=2)
     st.write(f'### Use a tabela abaixo para escolher as ações baseando-se nos dados dos últimos {tempo} anos:')
 
     dados = data.loc[str(int(data.index[-1][:4]) - tempo)+data.index[-1][4:]:]
@@ -334,9 +325,18 @@ def portfolio_page():
     st.write(summary)
 
 
+    col1, col2 = st.columns(2)
+    with col1:
+
+        selected_stocks = st.multiselect('Selecione as ações', data.columns, default=data.columns[0])
+    with col2:
+        wallet_percentages = {}
+        for stock in selected_stocks:
+            wallet_percentages[stock] = st.slider(f'Valor investido na {stock} (R$)', 0, 1000, 10)
+    
     st.write("Valor total investido na carteira: " + str(sum(wallet_percentages.values())))
     #st.write("As porcentagens de cada ação serao normalizadas para somar 100%")
-    if(st.button("Carteira Configurada")):
+    if(st.button("Mostrar resultados da carteira:")):
         DisplayResults(selected_stocks, wallet_percentages)
     # Alguns cálculos para adiantar para o usuário
     
