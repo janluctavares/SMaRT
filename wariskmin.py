@@ -1,9 +1,8 @@
 """
-Wariskmin - Wallet Data Visualization for Risk Minimization
+SMaRT - Stock MArket Risk Tolerance
 ----------------------------------------
 
-This script retrieves historical market data for a set of stocks from Yahoo Finance,
-calculates the covariance and distance of their time series, and clusters them to visualize groups of related time series.
+This script is about informing people and sharing knowledge about risk and diversification of investments.
 
 Author: Jan Luc Tavares
 CMP596 - Visual Analytics for Data Science
@@ -29,7 +28,7 @@ data = data.set_index('Date')
 
 
 def home_page():
-    st.write(" # Bem-vindo ao Wariskmin")
+    st.write(" # Bem-vindo ao SMaRT")
     st.write("### Entendendo ações e exposição a risco")
     st.write("Investir no mercado de ações pode ser intimidador, mas com as estratégias certas, você pode construir uma carteira diversificada que minimiza o risco.")
     st.write("A diversificação é a principal dessas estratégias: Ao investir em uma variedade de ações em diferentes setores e indústrias, você pode espalhar seu risco e se proteger contra as flutuações do mercado.")
