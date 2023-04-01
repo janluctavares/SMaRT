@@ -1,5 +1,5 @@
 """
-SMaRT - Stock MArket Risk Tolerance
+SMaRT - Stock MArket Risk Training
 ----------------------------------------
 
 This script is about informing people and sharing knowledge about risk and diversification of investments.
@@ -25,70 +25,10 @@ from datetime import datetime, timedelta
 data = pd.read_csv("DownloadedStockPrices.csv") #reads file where the downloaded stocks are stored
 data = data.set_index('Date')
 
-
-
-def home_page():
-    st.write(" # Bem-vindo ao SMaRT")
-    st.write("### Entendendo ações e exposição a risco")
-    st.write("Investir no mercado de ações pode ser intimidador, mas com as estratégias certas, você pode construir uma carteira diversificada que minimiza o risco.")
-    st.write("A diversificação é a principal dessas estratégias: Ao investir em uma variedade de ações em diferentes setores e indústrias, você pode espalhar seu risco e se proteger contra as flutuações do mercado.")
-    st.write(" # Vamos entender mais sobre isso!")
-    st.write("Utilize a barra de navegação à esquerda para navegar entre as páginas do app.")
-     
-    st.subheader("Sobre o dataset")
-    st.write("Nesta ferramenta, trabalhamos com os dados de 78 companhias negociadas na bolsa de valores brasileira e com dois indices, o IBOV (Brasil) e o S&P500 (EUA) representados por 'BOVA11.SA' e 'IVVB11.SA' respectivamente.")
-    st.write("Os dados obtidos compreendem os dias uteis de 11/03/2019 a 10/03/2023 e um programa auxiliar foi desenvolvido para fazer o download para outras datas, ativos e indices.")
-    st.write(" ### Abaixo, ainda pretendo detalhar melhor o dataset")
-    
-def market_page():
-	st.write("# Conhecendo o mercado")
-	st.write("Vamos trabalhar com dados das ações mais negociadas da bolsa de valores brasileira! Dos 100 'papeis' mais negociados na bolsa, estas 80 são as que temos acesso a 4 anos de dados.")
-	st.write("Por uma ou outra razão (como mudança de nome ou entrada recente no capital aberto), alguns 'papeis' não têm dados disponíveis para tanto tempo e precisamos de informação para fazer as análises que queremos.")
-
-	st.write("# Correlação")
-	st.write("Algumas companhias valorizam ou desvalorizam juntas, enquanto outras se beneficiam com a devalorização de certos setores. Vamos entender melhor isso!")
-	st.write('Vamos calcular as *correlações* entre cada ação com todas as demais, assim teremos noção de quanto elas variam juntas.')
-	with st.spinner("Calculando..."):
-		cov_matrix = np.cov(data.T)
-		corr_matrix = np.corrcoef(data.T) # This matrix contains the correlation coefficients of the stocks. They vary from -1 to 1.
-		#dist_matrix = np.sqrt(2*(1-corr_matrix)) # The distance matrix contains the correlation "transposed" to an idea of distance, where 0 means total direct correlation and 2 means inverse correlation. "no" correlation is valued at 1.41 = sqrt(2))
-		corr_df = pd.DataFrame(corr_matrix, columns=data.columns, index=data.columns)
-		#dist_df = pd.DataFrame(dist_matrix, columns=data.columns, index=data.columns)
-		
-	st.write("### Confira a matriz de correlaçoes!")
-	st.write("Quanto mais cor, mais correlacionada a ação está! Azul representa correlação direta e vermelho representa correlação inversa.")
-	fig, ax = plt.subplots()
-	sns.heatmap(corr_df, cmap="vlag_r")
-	plt.title("Heatmap da Matriz de Correlaçoes")
-	st.pyplot(fig)
-	
-	# Cluster stocks
-	st.write('# Agrupando ações (clustering)')
-	st.write("Vamos agrupar as ações de acordo com suas tendências de variação. Assim, teremos 'famílias' de ações que tendem a ter comportamentos semelhantes e podemos investigar como estes grupos são compostos.")
-	n_clusters = st.slider("Numero de Grupos", min_value=1, max_value=14, value=1, step=1, label_visibility="visible")
-	kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(corr_matrix)
-	labels = kmeans.labels_
-	st.write('Clustering realizado com sucesso.')
-		
-
-
-	st.write("## Agrupando as ações baseado nas suas correlações")
-	cluster_order = np.argsort(kmeans.labels_)
-	sorted_corr_df = corr_df.iloc[cluster_order, cluster_order]
-
-
-	fig, ax = plt.subplots()
-	sns.heatmap(sorted_corr_df, cmap="vlag_r")
-	plt.title("Matriz de correlaçoes rearranjada")
-	st.pyplot(fig)
-    
-	corr_df['label'] = labels
-
-    # Use the pandas groupby function to count the number of stocks in each cluster
-	cluster_counts = corr_df.groupby('label').size()
-    
-	sectors = {"VALE3.SA" : "Materiais",
+sectors = {"VALE3.SA" : "Materiais",
     "PETR4.SA" : "Energia",
+    "TSLA34.SA" : "BDR",
+    "SMAL11.SA" : "Índice",
     "ITUB4.SA" : "Financeiro",
     "BBDC4.SA" : "Financeiro",
     "BBAS3.SA" : "Financeiro",
@@ -167,11 +107,116 @@ def market_page():
     "YDUQ3.SA" : "Consumo Cíclico",
     "STBP3.SA" : "Industriais",
     "TRPL4.SA" : "Utilidade Pública"}
+
+
+def home_page():
+	st.write(" # Bem-vindo ao SMaRT")
+	st.write("### Entendendo ações e exposição a risco")
+	st.write("Investir no mercado de ações pode ser intimidador, mas com as estratégias certas, você pode construir uma carteira diversificada que minimiza o risco.")
+	st.write("A diversificação é a principal dessas estratégias: Ao investir em uma variedade de ações em diferentes setores e indústrias, você pode espalhar seu risco e se proteger contra as flutuações do mercado.")
+	st.write(" # Vamos entender mais sobre isso!")
+	st.write("Utilize a barra de navegação à esquerda para navegar entre as páginas do app.")
+	 
+	st.subheader("Sobre o dataset")
+	st.write("**Representatividade**:")
+	st.write("Nesta ferramenta, trabalhamos com os dados de 79 companhias negociadas na bolsa de valores brasileira e com três índices, o IBOV (Brasil), o S&P500 (EUA) e o SMLL (Brasil) representados por 'BOVA11.SA', 'IVVB11.SA' e 'SMAL11.SA' respectivamente.")
+	st.write("**Atualidade:**")
+	st.write("Os dados obtidos compreendem os dias uteis de 11/03/2019 a 10/03/2023. Foi desenvolvido um programa auxiliar para fazer o download para outras datas, ativos e índices.")
+
+	data_hp=data #the data, but the data used on the homepage (yes, I would like to optimize my code, but I'm on a schedule and I'm doing things as simple as possible - if it works, it's fine for me)
+
+	# visualização das empresas com maiores valores (valor mais recente)
+
+	
+	# pegando o valor mais recente de cada empresa
+	last_values = data_hp.iloc[-1][:-1]
+	
+	# ordenando os valores em ordem decrescente
+	sorted_values = last_values.sort_values(ascending=False)
+	fig, ax = plt.subplots()
+
+	# plotando um gráfico de barras horizontais com as 10 empresas com maiores valores
+	top_companies = sorted_values[3:13] #Exclui os tres primeiros valores, que são os índices
+	sns.barplot(x=top_companies.values, y=top_companies.index, color="blue")
+	plt.title("Empresas com preços mais altos (em 10/03/23)")
+	plt.xlabel("Preço (R$)")
+	plt.ylabel("Código da companhia")
+	st.pyplot(fig)
+	
+	# visualização dos setores mais presentes no dataset
+	st.subheader("Setores presentes no dataset")
+	
+	# contando a quantidade de empresas em cada setor
+	Setores_df = pd.DataFrame(list(sectors.items()), columns=['Ação', 'Setor'])
+	Setores_df.set_index("Ação")
+	sectors_count = Setores_df.value_counts("Setor")
+	
+	# plotando um gráfico de pizza com a distribuição de empresas por setor
+	fig, ax = plt.subplots()
+	plt.title("Os valores estão em % do total")
+	plt.pie(x=sectors_count.values, labels=sectors_count.index, autopct='%.2f', pctdistance=0.85)
+	st.pyplot(fig)
+	
+	# outras visualizações posso fazer
+	# histograma do valor de fechamento de uma empresa específica
+	# sns.histplot(df["código_da_empresa_1"], kde=False)
+	# st.pyplot()
+	
+	# scatter plot entre duas empresas para ver a correlação
+	# sns.scatterplot(x=df["código_da_empresa_1"], y=df["código_da_empresa_2"])
+	# st.pyplot()
+	
     
+def market_page():
+	st.write("# Conhecendo o mercado")
+	st.write("Vamos trabalhar com dados das ações mais negociadas da bolsa de valores brasileira! Dos 100 'papeis' mais negociados na bolsa, estas 80 são as que temos acesso a 4 anos de dados.")
+	st.write("Por uma ou outra razão (como mudança de nome ou entrada recente no capital aberto), alguns 'papeis' não têm dados disponíveis para tanto tempo e precisamos de informação para fazer as análises que queremos.")
+
+	st.write("# Correlação")
+	st.write("Algumas companhias valorizam ou desvalorizam juntas, enquanto outras se beneficiam com a devalorização de certos setores. Vamos entender melhor isso!")
+	st.write('Vamos calcular as *correlações* entre cada ação com todas as demais, assim teremos noção de quanto elas variam juntas.')
+	with st.spinner("Calculando..."):
+		cov_matrix = np.cov(data.T)
+		corr_matrix = np.corrcoef(data.T) # This matrix contains the correlation coefficients of the stocks. They vary from -1 to 1.
+		#dist_matrix = np.sqrt(2*(1-corr_matrix)) # The distance matrix contains the correlation "transposed" to an idea of distance, where 0 means total direct correlation and 2 means inverse correlation. "no" correlation is valued at 1.41 = sqrt(2))
+		corr_df = pd.DataFrame(corr_matrix, columns=data.columns, index=data.columns)
+		#dist_df = pd.DataFrame(dist_matrix, columns=data.columns, index=data.columns)
+		
+	st.write("### Confira a matriz de correlaçoes!")
+	st.write("Quanto mais cor, mais correlacionada a ação está! Azul representa correlação direta e vermelho representa correlação inversa.")
+	fig, ax = plt.subplots()
+	sns.heatmap(corr_df, cmap="vlag_r")
+	plt.title("Heatmap da Matriz de Correlaçoes")
+	st.pyplot(fig)
+	
+	# Cluster stocks
+	st.write('# Agrupando ações (clustering)')
+	st.write("Vamos agrupar as ações de acordo com suas tendências de variação. Assim, teremos 'famílias' de ações que tendem a ter comportamentos semelhantes e podemos investigar como estes grupos são compostos.")
+	n_clusters = st.slider("Numero de Grupos", min_value=1, max_value=14, value=1, step=1, label_visibility="visible")
+	kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(corr_matrix)
+	labels = kmeans.labels_
+	st.write('Clustering realizado com sucesso.')
+		
+
+
+	st.write("## Agrupando as ações baseado nas suas correlações")
+	cluster_order = np.argsort(kmeans.labels_)
+	sorted_corr_df = corr_df.iloc[cluster_order, cluster_order]
+
+
+	fig, ax = plt.subplots()
+	sns.heatmap(sorted_corr_df, cmap="vlag_r")
+	plt.title("Matriz de correlaçoes rearranjada")
+	st.pyplot(fig)
     
+	corr_df['label'] = labels
+
+    # Use the pandas groupby function to count the number of stocks in each cluster
+	cluster_counts = corr_df.groupby('label').size()
+       
     # Cria um DataFrame com as ações e suas classificações setoriais
-	Setores_df = pd.DataFrame(list(sectors.items()), columns=['Açao', 'Setor'])
-	Setores_df.set_index("Açao")
+	Setores_df = pd.DataFrame(list(sectors.items()), columns=['Ação', 'Setor'])
+	Setores_df.set_index("Ação")
     
     # Create a dictionary where the keys are the cluster labels and the values are the names of the stocks in each cluster
 	cluster_dict = {}
@@ -185,10 +230,10 @@ def market_page():
 	for label, count in cluster_counts.items():
 		if i%2 ==0:
 			col1.write(f"### Cluster {label + 1}\n Numero de açoes: {count}.\n\n")
-			col1.write(Setores_df.loc[Setores_df.Açao.isin(cluster_dict[label])])
+			col1.write(Setores_df.loc[Setores_df.Ação.isin(cluster_dict[label])])
 		elif i%2 == 1:
 			col2.write(f"### Cluster {label + 1}\n Numero de açoes: {count}.\n\n")
-			col2.write(Setores_df.loc[Setores_df.Açao.isin(cluster_dict[label])])      
+			col2.write(Setores_df.loc[Setores_df.Ação.isin(cluster_dict[label])])      
 		i+=1
     
 
